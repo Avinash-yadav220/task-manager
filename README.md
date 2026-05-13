@@ -30,7 +30,11 @@ npm run install:all
 
 # Create server/.env
 cp server/.env.example server/.env
-# Edit .env with your MongoDB URI and JWT secret
+# Edit server/.env with your MongoDB URI and JWT secret
+# Example MongoDB Atlas URI:
+# mongodb+srv://<username>:<password>@cluster0.zacpaz0.mongodb.net/<dbname>?retryWrites=true&w=majority
+# Example local MongoDB URI:
+# mongodb://127.0.0.1:27017/team-task-manager
 ```
 
 ### Development
