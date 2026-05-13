@@ -14,9 +14,10 @@ const app = express();
 
 app.use(express.json());
 
+// FIXED: Added a fallback so it doesn't break if CLIENT_URL is missing on Render
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: process.env.CLIENT_URL || "*", 
     credentials: true,
   })
 );
@@ -51,8 +52,19 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5002;
 
+// FIXED: Added clear logging so Render tells you exactly what is missing
+console.log("--- Checking Environment Variables ---");
+console.log("JWT_SECRET Status:", process.env.JWT_SECRET ? "✅ Found" : "❌ Missing");
+console.log("MONGO_URI Status:", process.env.MONGO_URI ? "✅ Found" : "❌ Missing");
+console.log("CLIENT_URL Status:", process.env.CLIENT_URL ? "✅ Found" : "❌ Missing (CORS will allow all)");
+
 if (!process.env.JWT_SECRET) {
-  console.error('Missing JWT_SECRET in server/.env');
+  console.error("❌ CRASH: Server stopped because JWT_SECRET is missing. Add it in Render Dashboard -> Environment!");
+  process.exit(1);
+}
+
+if (!process.env.MONGO_URI) {
+  console.error("❌ CRASH: Server stopped because MONGO_URI is missing. Add it in Render Dashboard -> Environment!");
   process.exit(1);
 }
 
@@ -63,6 +75,6 @@ connectDB()
     });
   })
   .catch((err) => {
-    console.error("❌ Failed to connect DB:", err);
+    console.error("❌ Failed to connect DB. Check if your MONGO_URI is correct and MongoDB allows IP 0.0.0.0/0:", err);
     process.exit(1);
   });
