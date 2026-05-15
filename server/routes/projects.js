@@ -20,7 +20,7 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// Create project (Global Admin only)
+// Create project (any authenticated user)
 router.post('/', auth, [
   body('name').trim().notEmpty().withMessage('Project name is required'),
 ], async (req, res) => {
@@ -28,12 +28,6 @@ router.post('/', auth, [
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
   try {
-    // Only global Admins can create projects
-    const currentUser = await User.findById(req.userId);
-    if (currentUser.role !== 'Admin') {
-      return res.status(403).json({ message: 'Only admins can create projects' });
-    }
-
     const project = await Project.create({
       name: req.body.name,
       description: req.body.description || '',
