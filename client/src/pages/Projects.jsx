@@ -91,7 +91,7 @@ export default function Projects() {
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Projects</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{projects.length} project{projects.length !== 1 ? 's' : ''}</p>
         </div>
-        {user && (
+        {isGlobalAdmin && (
           <Button onClick={() => setShowModal(true)}>
             <FolderPlus className="w-4 h-4" />
             New Project
@@ -100,7 +100,7 @@ export default function Projects() {
       </div>
 
       {/* Create Modal */}
-      {user && (
+      {isGlobalAdmin && (
         <Modal open={showModal} onClose={() => setShowModal(false)} title="Create Project">
           <form onSubmit={handleCreate} className="space-y-4">
             <Input
@@ -130,11 +130,15 @@ export default function Projects() {
 
       {projects.length === 0 ? (
         <EmptyState
-          icon={FolderPlus}
-          title="No projects yet"
-          description="Create your first project to start managing tasks with your team."
-          actionLabel={user ? 'Create Project' : undefined}
-          onAction={user ? () => setShowModal(true) : undefined}
+          icon={isGlobalAdmin ? FolderPlus : FolderOpen}
+          title={isGlobalAdmin ? 'No projects yet' : 'No projects assigned'}
+          description={
+            isGlobalAdmin
+              ? 'Create your first project to start managing tasks with your team.'
+              : 'You have not been added to any projects yet. Ask an admin to add you.'
+          }
+          actionLabel={isGlobalAdmin ? 'Create Project' : undefined}
+          onAction={isGlobalAdmin ? () => setShowModal(true) : undefined}
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
